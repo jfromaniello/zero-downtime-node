@@ -8,12 +8,15 @@ cluster.fork();
 process.on('SIGHUP', function () {
   console.log('reloading...');
   var new_worker = cluster.fork();
-  new_worker.on('listening', function () {
-
+  new_worker.once('listening', function () {
     //stop all other workers
     for(var id in cluster.workers) {
       if (id === new_worker.id.toString()) continue;
       cluster.workers[id].process.kill('SIGTERM');
     }
   });
+}).on('SIGTERM', function () {
+  for(var id in cluster.workers) {
+    cluster.workers[id].process.kill('SIGTERM');
+  }
 });

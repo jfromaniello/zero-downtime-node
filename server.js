@@ -4,12 +4,13 @@ if (cluster.isMaster) {
   return require('./master');
 }
 
+var enableDestroy = require('server-destroy');
 var express = require('express');
 var http = require('http');
 var app = express();
 
 app.get('/', function (req, res) {
-  res.send('hello!');
+  res.send('ha fsdgfds gfds gfd!');
 });
 
 app.get('/boom', function (req, res) {
@@ -21,9 +22,12 @@ var server = http.createServer(app).listen(8080, function () {
   console.log('http://localhost:8080');
 });
 
+enableDestroy(server);
+
 process.on('SIGTERM', function () {
   console.log('got SIGTERM, exiting.');
-  server.close(function () {
+  server.destroy(function () {
+    console.log('exit');
     process.exit(0);
   });
 });
